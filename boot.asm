@@ -67,9 +67,6 @@ _end:
     int 13h
     jmp 0:0x7e00
 
-msg: db "Booting at the Disco!!!", 0
-len_msg equ $-msg
-
 times (510 - ($-$$)) nop
 
 dw 0xaa55

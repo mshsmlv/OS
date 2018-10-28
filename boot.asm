@@ -22,19 +22,6 @@ _fill_by_spaces:
     jmp _fill_by_spaces
     
 _main:
-    mov ax, 0
-    mov es, ax
-    mov ah, 13h
-    mov al, 1
-    mov bh, 0 ; page
-    mov bl, 0x0d
-    mov bp, msg ; [es:bp] -> string to write
-    mov cx, len_msg
-    mov dh, 7 ;raw
-    mov dl, 27 ; column
-    int 10h
-    
-
     mov si, 2
 
 _print_art:
@@ -67,7 +54,18 @@ _print_art:
     add si, 1
     jmp _print_art
 
-_end: jmp _end
+_end:
+    mov ax, 0x0
+    mov es, ax
+    mov bx,0x7e00 ; [es:bp] -> buffer
+
+    mov ah, 0x2
+    mov al, 1  ; number of sectors
+    mov cx, 5 ; sector number
+    mov dh, 0  ; head number
+    mov dl, 0x80 ; drive number (bit 7 set for hard disk)
+    int 13h
+    jmp 0:0x7e00
 
 msg: db "Booting at the Disco!!!", 0
 len_msg equ $-msg
@@ -81,3 +79,4 @@ db "( o.o )"
 times 505 db 0xaa ; fill 3nd sector with 0xaa
 db " > ^ < "
 times 505 db 0xaa ; fill 4nd sector with 0xaa
+

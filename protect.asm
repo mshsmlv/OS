@@ -1,7 +1,5 @@
 [BITS 16]
 
-org 0x7e00
-    
     mov ax, 0
     mov ds, ax
     mov es, ax
@@ -17,6 +15,7 @@ org 0x7e00
     jmp CODE_SEG:_main
 
 [bits 32]
+[extern main]
 
 _main:
     mov ax, DATA_SEG
@@ -42,7 +41,8 @@ _print:
     jmp _print
 
 
-_end: jmp _end
+_end: call main 
+jmp $
 
 gdt:
 
@@ -79,6 +79,4 @@ DATA_SEG equ gdt_data - gdt
 
 msg: db "Booting at the Disco!!!", 0
 len_msg equ $-msg
-
-times (512 - ($-$$)) nop
 

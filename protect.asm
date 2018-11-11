@@ -11,7 +11,6 @@
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    mov ax, 0x23
     jmp CODE_SEG:_main
 
 [bits 32]

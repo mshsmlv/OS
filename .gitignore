@@ -2,3 +2,6 @@
 disk.img
 boot
 protect
+kernel
+*.o
+OS_lab

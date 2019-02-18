@@ -24,24 +24,9 @@ _main:
     mov gs, ax
     mov ss, ax
 
-    mov ebp, 0x90000
-    mov esp, ebp
-
-    mov ah, 0x0d
-    mov ecx, 0
-    mov ebx, 0xb8496
-_print:
-    mov al, [msg + ecx]
-    cmp al, 0
-    je _end
-    mov [ebx], ax
-    add ecx, 1
-    add ebx, 2
-    jmp _print
-
-
-_end: call main 
-jmp $
+_end:
+    call main 
+    jmp $
 
 gdt:
 

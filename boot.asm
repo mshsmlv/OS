@@ -42,7 +42,7 @@ _print_art:
     mov es, ax
     mov ah, 13h
     mov al, 1
-    mov bh, 0 ; page
+    mov bh, 1 ; page
     mov bl, 0x0d
     mov bp, 0x0500 ; [es:bp] -> string to write
     mov cx, 7
@@ -55,12 +55,18 @@ _print_art:
     jmp _print_art
 
 _end:
+    mov ah, 0x2
+    mov bh, 0
+    mov dh, 26
+    mov dl, 0
+    int 10h
+
     mov ax, 0x0
     mov es, ax
     mov bx,0x7e00 ; [es:bp] -> buffer
 
     mov ah, 0x2
-    mov al, 3  ; number of sectors
+    mov al, 20  ; number of sectors
     mov cx, 5 ; sector number
     mov dh, 0  ; head number
     mov dl, 0x80 ; drive number (bit 7 set for hard disk)

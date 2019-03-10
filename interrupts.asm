@@ -1,7 +1,4 @@
 [global idt_flush]
-[global isr0]
-[global isr1]
-[global isr2]
 [extern isr_handler]
 
 idt_flush:
@@ -9,23 +6,16 @@ idt_flush:
     lidt [eax]        ; Load the IDT pointer.
     ret
 
-isr0:
-    cli                 ; Disable interrupts
-    push byte 0         ; Push a dummy error code (if ISR0 doesn't push it's own error code)
-    push byte 0         ; Push the interrupt number (0)
-    jmp isr_common_stub ; Go to our common handler.
+%macro ISR 1
+    [global isr%1]
+    isr%1:
+        cli                 ; Disable interrupts
+        push byte 0         ; Push a dummy error code (if ISR0 doesn't push it's own error code)
+        push byte %1        ; Push the interrupt number (0)
+        jmp isr_common_stub ; Go to our common handler.
+%endmacro
 
-isr1:
-    cli                 ; Disable interrupts
-    push byte 0         ; Push a dummy error code (if ISR0 doesn't push it's own error code)
-    push byte 1         ; Push the interrupt number (0)
-    jmp isr_common_stub ; Go to our common handler.
-
-isr2:
-    cli                 ; Disable interrupts
-    push byte 0         ; Push a dummy error code (if ISR0 doesn't push it's own error code)
-    push byte 2         ; Push the interrupt number (0)
-    jmp isr_common_stub ; Go to our common handler.
+    ISR 32
 
 isr_common_stub:
     pusha                    ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax

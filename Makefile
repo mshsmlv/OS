@@ -20,7 +20,7 @@ kernel: protect.o kernel.o interrupts.o linker.ld
 disk.img: boot kernel
 	dd if=/dev/zero of=disk.img bs=1M count=1
 	dd if=boot of=disk.img bs=512 count=4 conv=notrunc
-	dd if=kernel of=disk.img bs=512 count=8 seek=4 conv=notrunc
+	dd if=kernel of=disk.img bs=512 count=100 seek=4 conv=notrunc
 
 run: disk.img
 	bochs -qf bochs.conf

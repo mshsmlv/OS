@@ -66,7 +66,7 @@ _end:
     mov bx,0x7e00 ; [es:bp] -> buffer
 
     mov ah, 0x2
-    mov al, 20  ; number of sectors
+    mov al, 30  ; number of sectors
     mov cx, 5 ; sector number
     mov dh, 0  ; head number
     mov dl, 0x80 ; drive number (bit 7 set for hard disk)

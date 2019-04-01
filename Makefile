@@ -1,6 +1,6 @@
 CFLAGS=-m32 -fno-pie -nostdlib -nodefaultlibs -nostartfiles -fno-builtin -Wno-int-to-pointer-cast -march=i386 -c 
 
-all: run
+all: disk.img
 
 protect.o: protect.asm
 	nasm -f elf protect.asm -o protect.o
@@ -26,5 +26,6 @@ run: disk.img
 	bochs -qf bochs.conf
 
 clean:
-	rm boot disk.img *.o
+	rm -f boot disk.img *.o
+	rm -f kernel
 

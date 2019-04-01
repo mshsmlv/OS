@@ -2,6 +2,7 @@
 
 void test_interrupts() {
     asm volatile ("int $0");
+    asm volatile ("int $0");
     asm volatile ("int $1");
     asm volatile ("int $2");
     asm volatile ("int $3");

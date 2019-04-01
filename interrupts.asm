@@ -1,75 +1,93 @@
 [global idt_flush]
-[extern isr_handler]
+[extern isr_handler_without_err]
+[extern isr_handler_with_err]
 
 idt_flush:
-    mov eax, [esp+4]  ; Get the pointer to the IDT, passed as a parameter. 
-    lidt [eax]        ; Load the IDT pointer.
+    mov eax, [esp+4]   
+    lidt [eax]
     ret
 
-%macro ISR 1
-    [global isr%1]
-    isr%1:
-        cli                 ; Disable interrupts
-        push byte 0         ; Push a dummy error code (if ISR0 doesn't push it's own error code)
-        push byte %1        ; Push the interrupt number (0)
-        jmp isr_common_stub ; Go to our common handler.
+%macro ISR_WITHOUT_ERR 1
+    [global isr_without_err%1]
+    isr_without_err%1:
+        push byte %1    
+        jmp isr_handle_without_err
 %endmacro
 
-    ISR 0
-    ISR 1
-    ISR 2
-    ISR 3
-    ISR 4
-    ISR 5
-    ISR 6
-    ISR 7
-    ISR 8
-    ISR 9
-    ISR 10
-    ISR 11
-    ISR 12
-    ISR 13
-    ISR 14
-    ISR 15
-    ISR 16
-    ISR 17
-    ISR 18
-    ISR 19
-    ISR 20
-    ISR 21
-    ISR 22
-    ISR 23
-    ISR 24
-    ISR 25
-    ISR 26
-    ISR 27
-    ISR 28
-    ISR 29
-    ISR 30
-    ISR 31
+%macro ISR_WITH_ERR 1
+    [global isr_with_err%1]
+    isr_with_err%1:
+        push byte 0       
+        push byte %1     
+        jmp isr_handle_with_err
+%endmacro
 
-isr_common_stub:
-    pusha                    ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+    ISR_WITHOUT_ERR 0
+    ISR_WITHOUT_ERR 1
+    ISR_WITHOUT_ERR 2
+    ISR_WITHOUT_ERR 3
+    ISR_WITHOUT_ERR 4
+    ISR_WITHOUT_ERR 5
+    ISR_WITHOUT_ERR 6
+    ISR_WITHOUT_ERR 7
+    ISR_WITH_ERR 8
+    ISR_WITHOUT_ERR 9
+    ISR_WITH_ERR 10
+    ISR_WITH_ERR 11
+    ISR_WITH_ERR 12
+    ISR_WITH_ERR 13
+    ISR_WITH_ERR 14
+    ISR_WITHOUT_ERR 15
+    ISR_WITHOUT_ERR 16
+    ISR_WITHOUT_ERR 17
+    ISR_WITHOUT_ERR 18
+    ISR_WITHOUT_ERR 19
+    ISR_WITHOUT_ERR 20
+    ISR_WITHOUT_ERR 21
+    ISR_WITHOUT_ERR 22
+    ISR_WITHOUT_ERR 23
+    ISR_WITHOUT_ERR 24
+    ISR_WITHOUT_ERR 25
+    ISR_WITHOUT_ERR 26
+    ISR_WITHOUT_ERR 27
+    ISR_WITHOUT_ERR 28
+    ISR_WITHOUT_ERR 29
+    ISR_WITHOUT_ERR 30
+    ISR_WITHOUT_ERR 31
+
+isr_handle_with_err:
+    pushad                   ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
     mov ax, ds               ; Lower 16-bits of eax = ds.
     push eax                 ; save the data segment descriptor
 
     mov ax, 0x10  ; load the kernel data segment descriptor
     mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
 
-    call isr_handler
+    call isr_handler_with_err
 
     pop eax        ; reload the original data segment descriptor
     mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
 
-    popa                     ; Pops edi,esi,ebp...
+    popad          ; Pops edi,esi,ebp...
     add esp, 8     ; Cleans up the pushed error code and pushed ISR number
-    sti
     iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+
+isr_handle_without_err:
+    pushad
+
+    mov ax, ds
+    push eax
+
+    mov ax, 0x10
+    mov ds, ax
+    
+    call isr_handler_without_err
+
+    pop eax
+    mov ds, ax
+
+    popad
+    add esp, 4
+    iret
 

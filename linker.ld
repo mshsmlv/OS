@@ -5,8 +5,8 @@ SECTIONS
 {
     . = 0x7e00;
 	.text  .  : {
-	    protect.o(.text) 
-		*(EXCLUDE_FILE(protect.o) .text)
+	    ./build/protect.o(.text) 
+		*(EXCLUDE_FILE(./build/protect.o) .text)
     }
 	.data : {
         *(.data)

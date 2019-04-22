@@ -6,6 +6,7 @@
 idt_flush:
     mov eax, [esp+4]   
     lidt [eax]
+    sti
     ret
 
 %macro ISR_WITHOUT_ERR 1

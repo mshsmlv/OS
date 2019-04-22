@@ -30,4 +30,13 @@ struct _stack_without_err_code {
 }  __attribute__((packed));
 typedef struct _stack_without_err_code stack_without_err_code;
 
+
 typedef void (*irq_handler)(stack_with_err_code);
+irq_handler irq_handlers[256];
+
+void init_idt();
+void isr_handler_with_err(stack_with_err_code regs);
+void isr_handler_without_err(stack_without_err_code regs);
+void irq_common_handler(stack_with_err_code regs);
+void set_irq_handler(int index, irq_handler func);
+

@@ -1,5 +1,7 @@
-#include "print.c"
 #include "interrupts.h"
+
+#include "../../periphery/screen/print.h"
+#include "../../periphery/helpers/helpers.h"
 
 extern void isr_without_err0();
 extern void isr_without_err1();
@@ -52,24 +54,12 @@ extern void irq47();
 
 extern void idt_flush(unsigned int);
 
-irq_handler irq_handlers[256];
-
 void set_irq_handler(int index, irq_handler func) {
     irq_handlers[index] = func;
 }
 
 idt_entry_t idt_entries[256];
 idt_ptr_t idt_ptr;
-
-static inline void send_byte_to_port(unsigned short port, unsigned char value) {
-    asm volatile ("outb %1, %0" : : "dN" (port), "a" (value));
-}
-
-static inline void io_wait(void) {
-    asm volatile ( "jmp 1f\n\t"
-                   "1:jmp 2f\n\t"
-                   "2:" );
-}
 
 void idt_set_gate(unsigned char num, unsigned int offset, unsigned short sel, unsigned char flags) {
     idt_entries[num].offset_1 = offset & 0xFFFF;
@@ -85,31 +75,6 @@ void idt_set_gate(unsigned char num, unsigned int offset, unsigned short sel, un
 void init_idt() {
     idt_ptr.limit = sizeof(idt_entry_t) * 256 -1;
     idt_ptr.base  = (unsigned int)&idt_entries;
-
-    send_byte_to_port(0x20, 0x11);
-    io_wait();
-    send_byte_to_port(0xa0, 0x11);
-    io_wait();
-
-    send_byte_to_port(0x21, 0x20); //offsets for interupts
-    io_wait();
-    send_byte_to_port(0xa1, 0x28); //offsets for interrupts
-    io_wait();
-
-    send_byte_to_port(0x21, 0x04); // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
-    io_wait();
-    send_byte_to_port(0xa1, 0x02); // ICW3: tell Slave PIC its cascade identity (0000 0010)
-    io_wait();
-
-    send_byte_to_port(0x21, 0x01);
-    io_wait();
-    send_byte_to_port(0xa1, 0x01);
-    io_wait();
-
-    send_byte_to_port(0x21, 0x00);
-    io_wait();
-    send_byte_to_port(0xa1, 0x00);
-    io_wait();
 
     idt_set_gate(0, (unsigned int)isr_without_err0, 0x08, 0x8E);
     idt_set_gate(1, (unsigned int)isr_without_err1, 0x08, 0x8E);

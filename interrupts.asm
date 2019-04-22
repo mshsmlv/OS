@@ -1,6 +1,7 @@
 [global idt_flush]
 [extern isr_handler_without_err]
 [extern isr_handler_with_err]
+[extern irq_common_handler]
 
 idt_flush:
     mov eax, [esp+4]   
@@ -21,6 +22,15 @@ idt_flush:
         push byte %1     
         jmp isr_handle_with_err
 %endmacro
+
+%macro IRQ 1
+    [global irq%1]
+    irq%1:
+        push byte 0
+        push byte %1
+        jmp irq_handle
+%endmacro
+
 
     ISR_WITHOUT_ERR 0
     ISR_WITHOUT_ERR 1
@@ -54,6 +64,22 @@ idt_flush:
     ISR_WITHOUT_ERR 29
     ISR_WITHOUT_ERR 30
     ISR_WITHOUT_ERR 31
+    IRQ 32
+    IRQ 33
+    IRQ 34
+    IRQ 35
+    IRQ 36
+    IRQ 37
+    IRQ 38
+    IRQ 39
+    IRQ 40
+    IRQ 41
+    IRQ 42
+    IRQ 43
+    IRQ 44
+    IRQ 45
+    IRQ 46
+    IRQ 47
 
 isr_handle_with_err:
     pushad                   ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
@@ -89,5 +115,23 @@ isr_handle_without_err:
 
     popad
     add esp, 4
+    iret
+
+irq_handle:
+    pushad
+
+    mov ax, ds
+    push eax
+
+    mov ax, 0x10
+    mov ds, ax
+    
+    call irq_common_handler
+
+    pop eax
+    mov ds, ax
+
+    popad
+    add esp, 8
     iret
 

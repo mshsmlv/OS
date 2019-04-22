@@ -11,6 +11,9 @@ interrupts.o: interrupts.asm
 kernel.o: kernel.c
 	gcc $(CFLAGS) kernel.c
 
+pic8259.o: pic8259.c
+	gcc $(CFLAGS) pic8259.c
+
 boot: boot.asm
 	nasm -fbin boot.asm
 

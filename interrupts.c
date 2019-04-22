@@ -1,4 +1,5 @@
 #include "print.c"
+#include "interrupts.h"
 
 extern void isr_without_err0();
 extern void isr_without_err1();
@@ -32,47 +33,83 @@ extern void isr_without_err28();
 extern void isr_without_err29();
 extern void isr_without_err30();
 extern void isr_without_err31();
+extern void irq32();
+extern void irq33();
+extern void irq34();
+extern void irq35();
+extern void irq36();
+extern void irq37();
+extern void irq38();
+extern void irq39();
+extern void irq40();
+extern void irq41();
+extern void irq42();
+extern void irq43();
+extern void irq44();
+extern void irq45();
+extern void irq46();
+extern void irq47();
 
 extern void idt_flush(unsigned int);
 
-struct idt_entry_struct {
-    unsigned short offset_1;  // offset bits 0..15
-    unsigned short sel;       // Kernel segment selector.
-    unsigned char  zero;      // unused, set to 0
-    unsigned char  type_attr; // type and attributes, see below
-    unsigned short offset_2;  // offset bits 16..31
-} __attribute__((packed));
+irq_handler irq_handlers[256];
 
-typedef struct idt_entry_struct idt_entry_t; 
-
-struct idt_ptr_struct {
-    unsigned short limit;
-    unsigned int base;
-} __attribute__((packed));
-
-typedef struct idt_ptr_struct idt_ptr_t;
-
-typedef struct _stack_with_err_code {
-   unsigned int ds;                                     // Data segment selector
-   unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
-   unsigned int int_no, err_code;                       // Interrupt number and error code (if applicable)
-   unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
-}  stack_with_err_code;
-
-struct _stack_without_err_code {
-   unsigned int ds;                                     // Data segment selector
-   unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
-   unsigned int int_no;
-   unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
-}  __attribute__((packed));
-typedef struct _stack_without_err_code stack_without_err_code;
+void set_irq_handler(int index, irq_handler func) {
+    irq_handlers[index] = func;
+}
 
 idt_entry_t idt_entries[256];
 idt_ptr_t idt_ptr;
 
+static inline void send_byte_to_port(unsigned short port, unsigned char value) {
+    asm volatile ("outb %1, %0" : : "dN" (port), "a" (value));
+}
+
+static inline void io_wait(void) {
+    asm volatile ( "jmp 1f\n\t"
+                   "1:jmp 2f\n\t"
+                   "2:" );
+}
+
+void idt_set_gate(unsigned char num, unsigned int offset, unsigned short sel, unsigned char flags) {
+    idt_entries[num].offset_1 = offset & 0xFFFF;
+    idt_entries[num].offset_2 = (offset >> 16) & 0xFFFF;
+
+    idt_entries[num].sel = sel;
+    idt_entries[num].zero = 0;
+    // We must uncomment the OR below when we get to using user-mode.
+    // It sets the interrupt gate's privilege level to 3.
+    idt_entries[num].type_attr   = flags /* | 0x60 */;
+}
+
 void init_idt() {
     idt_ptr.limit = sizeof(idt_entry_t) * 256 -1;
     idt_ptr.base  = (unsigned int)&idt_entries;
+
+    send_byte_to_port(0x20, 0x11);
+    io_wait();
+    send_byte_to_port(0xa0, 0x11);
+    io_wait();
+
+    send_byte_to_port(0x21, 0x20); //offsets for interupts
+    io_wait();
+    send_byte_to_port(0xa1, 0x28); //offsets for interrupts
+    io_wait();
+
+    send_byte_to_port(0x21, 0x04); // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+    io_wait();
+    send_byte_to_port(0xa1, 0x02); // ICW3: tell Slave PIC its cascade identity (0000 0010)
+    io_wait();
+
+    send_byte_to_port(0x21, 0x01);
+    io_wait();
+    send_byte_to_port(0xa1, 0x01);
+    io_wait();
+
+    send_byte_to_port(0x21, 0x00);
+    io_wait();
+    send_byte_to_port(0xa1, 0x00);
+    io_wait();
 
     idt_set_gate(0, (unsigned int)isr_without_err0, 0x08, 0x8E);
     idt_set_gate(1, (unsigned int)isr_without_err1, 0x08, 0x8E);
@@ -106,19 +143,28 @@ void init_idt() {
     idt_set_gate(29, (unsigned int)isr_without_err29, 0x08, 0x8E);
     idt_set_gate(30, (unsigned int)isr_without_err30, 0x08, 0x8E);
     idt_set_gate(31, (unsigned int)isr_without_err31, 0x08, 0x8E);
+    idt_set_gate(32, (unsigned int)irq32, 0x08, 0x8E);
+    idt_set_gate(33, (unsigned int)irq33, 0x08, 0x8E);
+    idt_set_gate(34, (unsigned int)irq34, 0x08, 0x8E);
+    idt_set_gate(35, (unsigned int)irq35, 0x08, 0x8E);
+    idt_set_gate(36, (unsigned int)irq36, 0x08, 0x8E);
+    idt_set_gate(37, (unsigned int)irq37, 0x08, 0x8E);
+    idt_set_gate(38, (unsigned int)irq38, 0x08, 0x8E);
+    idt_set_gate(39, (unsigned int)irq39, 0x08, 0x8E);
+    idt_set_gate(40, (unsigned int)irq40, 0x08, 0x8E);
+    idt_set_gate(41, (unsigned int)irq41, 0x08, 0x8E);
+    idt_set_gate(42, (unsigned int)irq42, 0x08, 0x8E);
+    idt_set_gate(43, (unsigned int)irq43, 0x08, 0x8E);
+    idt_set_gate(44, (unsigned int)irq44, 0x08, 0x8E);
+    idt_set_gate(45, (unsigned int)irq45, 0x08, 0x8E);
+    idt_set_gate(46, (unsigned int)irq46, 0x08, 0x8E);
+    idt_set_gate(47, (unsigned int)irq47, 0x08, 0x8E);
+
+    for(int i = 0; i < 256; i++) {
+        irq_handlers[i] = 0;
+    }
 
     idt_flush((unsigned int)&idt_ptr);
-}
-
-void idt_set_gate(unsigned char num, unsigned int offset, unsigned short sel, unsigned char flags) {
-    idt_entries[num].offset_1 = offset & 0xFFFF;
-    idt_entries[num].offset_2 = (offset >> 16) & 0xFFFF;
-
-    idt_entries[num].sel = sel;
-    idt_entries[num].zero = 0;
-    // We must uncomment the OR below when we get to using user-mode.
-    // It sets the interrupt gate's privilege level to 3.
-    idt_entries[num].type_attr   = flags /* | 0x60 */;
 }
 
 void isr_handler_with_err(stack_with_err_code regs) {
@@ -138,3 +184,11 @@ void isr_handler_without_err(stack_without_err_code regs) {
 }
 
 
+void irq_common_handler(stack_with_err_code regs) {
+    irq_handler handler = irq_handlers[regs.int_no];
+    if (handler != 0) {
+        (*handler)(regs);
+    }
+    if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */
+    send_byte_to_port(0x20, 0x20); /* master */
+}

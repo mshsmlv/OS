@@ -17,6 +17,9 @@ pic8259.o: ./periphery/pic8259/pic8259.c
 timer.o: ./periphery/timer/timer.c
 	gcc $(CFLAGS) ./periphery/timer/timer.c -o ./build/timer.o
 
+keyboard.o: ./periphery/keyboard/keyboard.c
+	gcc $(CFLAGS) ./periphery/keyboard/keyboard.c -o ./build/keyboard.o
+
 print.o: ./periphery/screen/print.c
 	gcc $(CFLAGS) ./periphery/screen/print.c -o ./build/print.o
 
@@ -27,7 +30,7 @@ kernel.o: kernel.c
 boot: ./cpu/boot/boot.asm
 	nasm -fbin ./cpu/boot/boot.asm -o ./build/boot
 
-kernel: protect.o kernel.o print.o interrupts_c.o interrupts.o pic8259.o timer.o
+kernel: protect.o kernel.o print.o interrupts_c.o interrupts.o pic8259.o timer.o keyboard.o
 	ld -T linker.ld ./build/*.o -o ./build/kernel
 
 disk.img: boot kernel

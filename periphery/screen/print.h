@@ -3,3 +3,5 @@
 
 int print(char* format_string);
 int str(char* dst, unsigned int a);
+void print_num(int num);
+void print_char(char letter);

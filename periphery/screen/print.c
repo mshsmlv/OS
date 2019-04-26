@@ -25,6 +25,16 @@ int str(char* dst, unsigned int a) {
     } while(a);
 }
 
+void clean_last_string() {
+    char* cursor = (char*)(BEGIN_OF_VIDEO_MEMORY + (STRINGS_NUMBER)*COLUMNS_NUMBER*2);
+    while (cursor < (char*)(BEGIN_OF_VIDEO_MEMORY + (STRINGS_NUMBER+1)*COLUMNS_NUMBER*2)) {
+        *cursor = ' ';
+        *(cursor + 1) = 0xd;
+        cursor += 2;
+
+    }
+}
+
 int rewrite_string(int index) {
     char* current_string = (char*)(BEGIN_OF_VIDEO_MEMORY+ (COLUMNS_NUMBER*2)*index);
     char* previous_string = (char*)(BEGIN_OF_VIDEO_MEMORY + (COLUMNS_NUMBER*2) * (index-1));
@@ -32,11 +42,12 @@ int rewrite_string(int index) {
     for(i = 0; i < (COLUMNS_NUMBER*2); i++) {
         *(previous_string + i) = *(current_string + i);
     }
+    clean_last_string();
 }
 
 int scroll() {
     int i;
-    for(i = 1; i < 25; i++) {
+    for(i = 1; i < 26; i++) {
         rewrite_string(i);
     }
 }
@@ -67,6 +78,10 @@ void tabulation() {
 int print(char* format_string) {
     int i = 0;
     while (format_string[i]) {
+        if ((int)(VIDEO_MEMORY+2) >= BEGIN_OF_VIDEO_MEMORY + STRINGS_NUMBER*COLUMNS_NUMBER*2) {
+            scroll();
+            VIDEO_MEMORY = (char*)(BEGIN_OF_VIDEO_MEMORY + (STRINGS_NUMBER-1)*COLUMNS_NUMBER*2);
+        }
         if (format_string[i] == '\n') {
             carriage_return(); 
             i++;
@@ -77,10 +92,6 @@ int print(char* format_string) {
             i++;
             continue;
         }
-        if ((int)(VIDEO_MEMORY+2) >= BEGIN_OF_VIDEO_MEMORY + STRINGS_NUMBER*COLUMNS_NUMBER*2) {
-            scroll();
-            VIDEO_MEMORY = (char*)(BEGIN_OF_VIDEO_MEMORY + (STRINGS_NUMBER-1)*COLUMNS_NUMBER*2);
-        }
         *VIDEO_MEMORY = format_string[i];
         *(VIDEO_MEMORY + 1) = 0xd;
         VIDEO_MEMORY += 2;
@@ -88,4 +99,15 @@ int print(char* format_string) {
     }
 }
 
+void print_num(int num) {
+    char int_no[100];
+    str(int_no, num);
+    print(int_no);
+}
 
+void print_char(char letter) {
+    char str[2];
+    str[0] = letter;
+    str[1] = 0;
+    print(str);
+}

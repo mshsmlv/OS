@@ -8,8 +8,6 @@ int tick = 0;
 
 static void timer_callback(stack_with_err_code regs) {
     tick++;
-    if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */
-    send_byte_to_port(0x20, 0x20); /* master */
     if (tick == 1000) {
         tick = 0;
         print("tick\n");

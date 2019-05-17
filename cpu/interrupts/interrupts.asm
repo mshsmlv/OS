@@ -1,6 +1,6 @@
 [global idt_flush]
 [extern isr_handler_without_err]
-[extern isr_handler_with_err]
+[extern common_handler]
 [extern irq_common_handler]
 
 idt_flush:
@@ -12,16 +12,16 @@ idt_flush:
 %macro ISR_WITHOUT_ERR 1
     [global isr_without_err%1]
     isr_without_err%1:
+        push 0
         push byte %1    
-        jmp isr_handle_without_err
+        jmp isr_common_handle
 %endmacro
 
 %macro ISR_WITH_ERR 1
     [global isr_with_err%1]
     isr_with_err%1:
-        push byte 0       
         push byte %1     
-        jmp isr_handle_with_err
+        jmp isr_common_handle
 %endmacro
 
 %macro IRQ 1
@@ -82,7 +82,7 @@ idt_flush:
     IRQ 46
     IRQ 47
 
-isr_handle_with_err:
+isr_common_handle:
     pushad                   ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
     mov ax, ds               ; Lower 16-bits of eax = ds.
@@ -91,7 +91,7 @@ isr_handle_with_err:
     mov ax, 0x10  ; load the kernel data segment descriptor
     mov ds, ax
 
-    call isr_handler_with_err
+    call common_handler
 
     pop eax        ; reload the original data segment descriptor
     mov ds, ax
@@ -99,24 +99,6 @@ isr_handle_with_err:
     popad          ; Pops edi,esi,ebp...
     add esp, 8     ; Cleans up the pushed error code and pushed ISR number
     iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
-
-isr_handle_without_err:
-    pushad
-
-    mov ax, ds
-    push eax
-
-    mov ax, 0x10
-    mov ds, ax
-    
-    call isr_handler_without_err
-
-    pop eax
-    mov ds, ax
-
-    popad
-    add esp, 4
-    iret
 
 irq_handle:
     pushad
@@ -135,4 +117,3 @@ irq_handle:
     popad
     add esp, 8
     iret
-

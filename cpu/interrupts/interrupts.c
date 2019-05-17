@@ -73,7 +73,7 @@ void idt_set_gate(unsigned char num, unsigned int offset, unsigned short sel, un
 }
 
 void init_idt() {
-    idt_ptr.limit = sizeof(idt_entry_t) * 256 -1;
+    idt_ptr.limit = sizeof(idt_entry_t) * 48 -1;
     idt_ptr.base  = (unsigned int)&idt_entries;
 
     idt_set_gate(0, (unsigned int)isr_without_err0, 0x08, 0x8E);
@@ -132,22 +132,13 @@ void init_idt() {
     idt_flush((unsigned int)&idt_ptr);
 }
 
-void isr_handler_with_err(stack_with_err_code regs) {
+void common_handler(stack_with_err_code regs) {
     print("recieved interrupt with err code: ");
     char int_no[10];
     str(int_no, regs.int_no);
     print(int_no);
     print("\n");
 }
-
-void isr_handler_without_err(stack_without_err_code regs) {
-    print("recieved interrupt without err code: ");
-    char int_no[10];
-    str(int_no, regs.int_no);
-    print(int_no);
-    print("\n");
-}
-
 
 void irq_common_handler(stack_with_err_code regs) {
     irq_handler handler = irq_handlers[regs.int_no];

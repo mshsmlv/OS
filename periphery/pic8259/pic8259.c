@@ -3,7 +3,7 @@
 #include "../helpers/helpers.h"
 
 void init_pic8259() {
-    send_byte_to_port(0x20, 0x11);
+    send_byte_to_port(0x20, 0x11); // needs icw4; cascade mode enable; 8-bit call address interval; edge triggered mode
     io_wait();
     send_byte_to_port(0xa0, 0x11);
     io_wait();
@@ -18,14 +18,14 @@ void init_pic8259() {
     send_byte_to_port(0xa1, 0x02); // ICW3: tell Slave PIC its cascade identity (0000 0010)
     io_wait();
 
-    send_byte_to_port(0x21, 0x01);
+    send_byte_to_port(0x21, 0x01); // ICW4: last bit - 8086 mode
     io_wait();
     send_byte_to_port(0xa1, 0x01);
     io_wait();
 
     send_byte_to_port(0x21, 0x00); // send mask to imr (interrupt mask register)
     io_wait();
-    send_byte_to_port(0xa1, 0x00);
+    send_byte_to_port(0xa1, 0x00); 
     io_wait();
 }
 

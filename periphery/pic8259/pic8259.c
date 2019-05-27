@@ -3,7 +3,7 @@
 #include "../helpers/helpers.h"
 
 void init_pic8259() {
-    send_byte_to_port(0x20, 0x11); // needs icw4; cascade mode enable; 8-bit call address interval; edge triggered mode
+    send_byte_to_port(0x20, 0x11); // needs icw4; cascade mode enable; edge triggered mode
     io_wait();
     send_byte_to_port(0xa0, 0x11);
     io_wait();
@@ -23,9 +23,9 @@ void init_pic8259() {
     send_byte_to_port(0xa1, 0x01);
     io_wait();
 
-    send_byte_to_port(0x21, 0x00); // send mask to imr (interrupt mask register)
+    send_byte_to_port(0x21, 0xff); // send mask to imr (interrupt mask register)
     io_wait();
-    send_byte_to_port(0xa1, 0x00); 
+    send_byte_to_port(0xa1, 0xff); 
     io_wait();
 }
 

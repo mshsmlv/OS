@@ -8,8 +8,7 @@ static inline void io_wait(void) {
                    "2:" );
 }
 
-
-static inline char inb(unsigned short port) {
+static inline char read_byte_from_port(unsigned short port) {
     unsigned char ret;
     asm volatile ("inb %1, %0": "=a"(ret): "dN"(port) );
     return ret;

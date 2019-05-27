@@ -76,7 +76,7 @@ void init_idt() {
     idt_ptr.limit = sizeof(idt_entry_t) * 48 -1;
     idt_ptr.base  = (unsigned int)&idt_entries;
 
-    idt_set_gate(0, (unsigned int)isr_without_err0, 0x08, 0x8E);
+    idt_set_gate(0, (unsigned int)isr_without_err0, 0x08, 0x8E); //(10001110) {p}{DPL} 11{size of gate 32 bit}0
     idt_set_gate(1, (unsigned int)isr_without_err1, 0x08, 0x8E);
     idt_set_gate(2, (unsigned int)isr_without_err2, 0x08, 0x8E);
     idt_set_gate(3, (unsigned int)isr_without_err3, 0x08, 0x8E);

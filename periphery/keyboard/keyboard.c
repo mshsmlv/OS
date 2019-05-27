@@ -8,7 +8,7 @@ char scancode_to_ascii[100] = "\xff`1234567890-=\xff\xffqwertyuiop[]\xff\xff\x61
 
 void keyboard_callback(stack_with_err_code regs) {
     char letter;
-    unsigned int scan_code = inb(0x60);
+    unsigned int scan_code = read_byte_from_port(0x60);
     io_wait();
     if(scan_code < 59) {
         if (scan_code == 28) {
@@ -24,4 +24,12 @@ void keyboard_callback(stack_with_err_code regs) {
 
 void init_keyboard() {
     set_irq_handler(33, keyboard_callback);
+
+    char imr;
+    imr = read_byte_from_port(0x21);
+    io_wait();
+    imr = imr & (0xff - 2); // enable keyboard interrupt (pin 1)
+    send_byte_to_port(0x21, imr);
+    io_wait();
+
 }

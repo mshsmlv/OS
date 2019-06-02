@@ -8,7 +8,7 @@ char scancode_to_ascii[100] = "\xff`1234567890-=\xff\xffqwertyuiop[]\xff\xff\x61
 
 void keyboard_callback(stack_with_err_code regs) {
     unsigned int status = read_byte_from_port(0x64);
-    // Check read enable from -x60 port
+    // Check read enable from 0x60 port
     // and that ps/2 connector is clear.
     // If ps/2 connector is set, it means that
     // in the port 0x60 mouse data.

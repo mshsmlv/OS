@@ -1,4 +1,4 @@
-CFLAGS=-m32 -fno-pie -nostdlib -nodefaultlibs -nostartfiles -fno-builtin -Wno-int-to-pointer-cast -march=i386 -c 
+CFLAGS=-m32 -fno-pie -nostdlib -nodefaultlibs -nostartfiles -fno-builtin -Wno-int-to-pointer-cast -march=i386 -c -g
 
 all: disk.img
 
@@ -23,14 +23,19 @@ keyboard.o: ./periphery/keyboard/keyboard.c
 print.o: ./periphery/screen/print.c
 	gcc $(CFLAGS) ./periphery/screen/print.c -o ./build/print.o
 
+tasks.o: ./cpu/multitasking/task.asm
+	nasm -f elf ./cpu/multitasking/task.asm -o ./build/tasks.o
+
+tasks_c.o: ./cpu/multitasking/tasks.c
+	gcc $(CFLAGS) ./cpu/multitasking/tasks.c -o ./build/tasks_c.o
+
 kernel.o: kernel.c
 	gcc $(CFLAGS) kernel.c -o ./build/kernel.o
-
 
 boot: ./cpu/boot/boot.asm
 	nasm -fbin ./cpu/boot/boot.asm -o ./build/boot
 
-kernel: protect.o kernel.o print.o interrupts_c.o interrupts.o pic8259.o timer.o keyboard.o
+kernel: protect.o kernel.o print.o interrupts_c.o interrupts.o pic8259.o timer.o keyboard.o tasks.o tasks_c.o
 	ld -T linker.ld ./build/*.o -o ./build/kernel
 
 disk.img: boot kernel

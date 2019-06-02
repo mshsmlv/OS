@@ -1,3 +1,5 @@
+#pragma once
+
 struct idt_entry_struct {
     unsigned short offset_1;  // offset bits 0..15
     unsigned short sel;       // Kernel segment selector.
@@ -31,7 +33,7 @@ struct _stack_without_err_code {
 typedef struct _stack_without_err_code stack_without_err_code;
 
 
-typedef void (*irq_handler)(stack_with_err_code);
+typedef void (*irq_handler)(stack_with_err_code*);
 irq_handler irq_handlers[256];
 
 void init_idt();

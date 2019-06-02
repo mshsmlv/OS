@@ -6,11 +6,12 @@
 
 int tick = 0;
 
-static void timer_callback(stack_with_err_code regs) {
+static void timer_callback(stack_with_err_code* regs) {
     tick++;
     if (tick == 1000) {
         tick = 0;
-        print("tick\n");
+        print("---------------------------\n");
+        switch_task(regs);
     }
 }
 

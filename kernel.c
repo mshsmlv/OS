@@ -1,10 +1,8 @@
 #include "cpu/interrupts/interrupts.h"
+#include "cpu/multitasking/tasks.h"
 #include "periphery/pic8259/pic8259.h"
 #include "periphery/timer/timer.h"
 #include "periphery/keyboard/keyboard.h"
-
-extern int test();
-
 
 void test_interrupts() {
    // int a = 12/0;
@@ -13,9 +11,9 @@ void test_interrupts() {
 
 void main() {
    init_idt();
-   //test();
    test_interrupts();
    init_pic8259();
    init_timer();
    init_keyboard();
+   start_multitasking();
 }

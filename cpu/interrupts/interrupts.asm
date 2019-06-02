@@ -1,7 +1,10 @@
 [global idt_flush]
+[global irq_timer_handler]
+
 [extern isr_handler_without_err]
 [extern common_handler]
 [extern irq_common_handler]
+[extern timer_callback]
 
 idt_flush:
     mov eax, [esp+4]   
@@ -65,7 +68,6 @@ idt_flush:
     ISR_WITHOUT_ERR 29
     ISR_WITHOUT_ERR 30
     ISR_WITHOUT_ERR 31
-    IRQ 32
     IRQ 33
     IRQ 34
     IRQ 35
@@ -111,6 +113,27 @@ irq_handle:
     
     call irq_common_handler
 
+    pop eax
+    mov ds, ax
+
+    popad
+    add esp, 8
+    iret
+
+irq_timer_handler:
+    push 0
+    push 32
+
+    pushad
+
+    mov ax, ds
+    push eax
+
+    mov ax, 0x10
+    mov ds, ax
+
+    call irq_common_handler
+     
     pop eax
     mov ds, ax
 

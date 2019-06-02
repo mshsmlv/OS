@@ -35,7 +35,7 @@ extern void isr_without_err28();
 extern void isr_without_err29();
 extern void isr_without_err30();
 extern void isr_without_err31();
-extern void irq32();
+extern void irq_timer_handler();
 extern void irq33();
 extern void irq34();
 extern void irq35();
@@ -108,7 +108,7 @@ void init_idt() {
     idt_set_gate(29, (unsigned int)isr_without_err29, 0x08, 0x8E);
     idt_set_gate(30, (unsigned int)isr_without_err30, 0x08, 0x8E);
     idt_set_gate(31, (unsigned int)isr_without_err31, 0x08, 0x8E);
-    idt_set_gate(32, (unsigned int)irq32, 0x08, 0x8E);
+    idt_set_gate(32, (unsigned int)irq_timer_handler, 0x08, 0x8E);
     idt_set_gate(33, (unsigned int)irq33, 0x08, 0x8E);
     idt_set_gate(34, (unsigned int)irq34, 0x08, 0x8E);
     idt_set_gate(35, (unsigned int)irq35, 0x08, 0x8E);

@@ -14,6 +14,6 @@ void main() {
    test_interrupts();
    init_pic8259();
    init_timer();
-   init_keyboard();
+  // init_keyboard();
    start_multitasking();
 }

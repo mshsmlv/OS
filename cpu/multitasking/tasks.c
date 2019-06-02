@@ -10,18 +10,21 @@ unsigned int current_task_index = -1;
 
 
 void exit_handler() {
-
+    print("exit handler");
+    while(1) {};
 }
 
 void init_task(unsigned int func_address) {
     for(int i = 0; i < tasks_num; i++) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
-            unsigned int new_stack_pointer = (stacks + stack_size*i);
+            unsigned int new_stack_pointer = stacks + stack_size*(i + 1) - 4;
             *((unsigned int*)new_stack_pointer) = i;
-            *((unsigned int*)new_stack_pointer + 4) = (unsigned int)exit_handler;
-            task_list[i].ebp = new_stack_pointer + 8;
-            task_list[i].esp = new_stack_pointer + 8;
+            new_stack_pointer -= 4;
+            *((unsigned int*)new_stack_pointer) = (unsigned int)exit_handler;
+            new_stack_pointer -= 4;
+            task_list[i].ebp = new_stack_pointer;
+            task_list[i].esp = new_stack_pointer;
             task_list[i].eip = func_address;
             task_list[i].index = i;
 
@@ -36,6 +39,12 @@ void init_task(unsigned int func_address) {
             print("\n");
             print("init task with eip: ");
             print_num(task_list[i].eip);
+            print("\n");
+            print("init task with ret address: ");
+            print_num((unsigned int)exit_handler);
+            print("\n");
+            print("init task with stack: ");
+            print_num(new_stack_pointer);
             print("\n");
             return;
         }
@@ -97,25 +106,21 @@ int custom_counter = 0;
 void task1() {
     while(1) {
         if ((custom_counter % 1000000) == 0) { 
-            print("Hello from task 1\n");
+           // print("Hello from task 1\n");
         }
         custom_counter++;
     }
 }
 
 void task2() {
-    while(1) {
-        if ((custom_counter % 1000000) == 0) {
-            print("Hello from task 2\n");
-        }
-        custom_counter++;
-    }
+    print("Hello from task 2\n");
+    print("return\n");
 }
 
 void task3() {
     while(1) {
         if ((custom_counter % 1000000) == 0) {
-            print("Hello from task 3\n");
+           // print("Hello from task 3\n");
         }
         custom_counter++;
     }
@@ -124,7 +129,7 @@ void task3() {
 void task4() {
     while(1) {
         if ((custom_counter % 1000000) == 0) {
-            print("Hello from task 4\n");
+          //  print("Hello from task 4\n");
         }
         custom_counter++;
     }

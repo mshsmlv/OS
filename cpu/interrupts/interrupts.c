@@ -125,6 +125,10 @@ void init_idt() {
     idt_set_gate(46, (unsigned int)irq46, 0x08, 0x8E);
     idt_set_gate(47, (unsigned int)irq47, 0x08, 0x8E);
 
+    print("irq timer handler: \n");
+    print_num((unsigned int)irq_timer_handler);
+    print("\n");
+
     for(int i = 0; i < 256; i++) {
         irq_handlers[i] = 0;
     }
@@ -133,17 +137,23 @@ void init_idt() {
 }
 
 void common_handler(stack_with_err_code regs) {
-    print("recieved interrupt with err code: ");
-    char int_no[10];
-    str(int_no, regs.int_no);
-    print(int_no);
-    print("\n");
+    // print("recieved interrupt with err code: ");
+    // char int_no[10];
+    // str(int_no, regs.int_no);
+    // print(int_no);
+    // print("\n");
 }
 
 void irq_common_handler(stack_with_err_code regs) {
     irq_handler handler = irq_handlers[regs.int_no];
     if (handler != 0) {
-        (*handler)(&regs);        
+        // print("handler address: ");
+        // print_num((unsigned int)handler);
+        // print("\n");
+        // print("cs :");
+        // print_num(regs.cs);
+        // print("\n");
+        (*handler)(&regs);      
     }
     if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */
     send_byte_to_port(0x20, 0x20); /* master */

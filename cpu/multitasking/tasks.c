@@ -19,10 +19,10 @@ void init_task(unsigned int func_address) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
             unsigned int new_stack_pointer = stacks + stack_size*(i + 1) - 4;
-            *((unsigned int*)new_stack_pointer) = i;
-            new_stack_pointer -= 4;
-            *((unsigned int*)new_stack_pointer) = (unsigned int)exit_handler;
-            new_stack_pointer -= 4;
+            //*((unsigned int*)new_stack_pointer) = i;
+            //new_stack_pointer -= 4;
+           // *((unsigned int*)new_stack_pointer) = (unsigned int)exit_handler;
+            // new_stack_pointer -= 4;
             task_list[i].ebp = new_stack_pointer;
             task_list[i].esp = new_stack_pointer;
             task_list[i].eip = func_address;
@@ -106,21 +106,26 @@ int custom_counter = 0;
 void task1() {
     while(1) {
         if ((custom_counter % 1000000) == 0) { 
-           // print("Hello from task 1\n");
+           print("Hello from task 1\n");
         }
         custom_counter++;
     }
 }
 
 void task2() {
-    print("Hello from task 2\n");
-    print("return\n");
+    while(1) {
+        if ((custom_counter % 1000000) == 0) { 
+           // print("Hello from task 2\n");
+        }
+        custom_counter++;
+    } 
 }
 
 void task3() {
     while(1) {
+        //asm volatile("sti");
         if ((custom_counter % 1000000) == 0) {
-           // print("Hello from task 3\n");
+            //print("Hello from task 3\n");
         }
         custom_counter++;
     }
@@ -128,8 +133,9 @@ void task3() {
 
 void task4() {
     while(1) {
+      //  asm volatile("sti");
         if ((custom_counter % 1000000) == 0) {
-          //  print("Hello from task 4\n");
+           print("Hello from task 4\n");
         }
         custom_counter++;
     }
@@ -140,7 +146,7 @@ void start_multitasking() {
         task_list[i].is_fineshed = 1;
     }
     init_task((unsigned int)task1);
-    init_task((unsigned int)task2);
+   // init_task((unsigned int)task2);
     init_task((unsigned int)task3);
     init_task((unsigned int)task4);
     current_task_index = 0;

@@ -8,10 +8,12 @@ int tick = 0;
 
 void timer_callback(stack_with_err_code* regs) {
     tick++;
-
+    // print("tick: ");
+    // print_num((unsigned int)tick);
+    // print("\n");
     if (tick == 1000) {
         tick = 0;
-        print("tick\n");
+        print("TICK\n");
         print("---------------------------\n");
         switch_task(&regs);
     }

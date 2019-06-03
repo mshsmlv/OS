@@ -153,6 +153,9 @@ void irq_common_handler(stack_with_err_code regs) {
         // print("cs :");
         // print_num(regs.cs);
         // print("\n");
+        // print("eip: ");
+        // print_num(regs.eip);
+        // print("\n");
         (*handler)(&regs);      
     }
     if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */

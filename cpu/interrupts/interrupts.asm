@@ -147,6 +147,9 @@ irq_timer_handler:
 
     pop esp ; store esp
 
+    mov eax, [ebx + 28]
+    mov eax, [esp + 8]
+
     mov eax, [ebx + 28] ; eip
     mov [esp + 8], eax
 
@@ -154,6 +157,7 @@ irq_timer_handler:
     mov [esp + 12], eax
 
     mov eax, [ebx + 36] ; eflags
+    
     mov [esp + 16], eax
 
     mov eax, [ebx + 36]
@@ -178,3 +182,4 @@ irq_timer_handler:
 
     add esp, 8
     iret
+

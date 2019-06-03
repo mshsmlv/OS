@@ -19,10 +19,6 @@ void init_task(unsigned int func_address) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
             unsigned int new_stack_pointer = stacks + stack_size*(i + 1) - 4;
-            //*((unsigned int*)new_stack_pointer) = i;
-            //new_stack_pointer -= 4;
-           // *((unsigned int*)new_stack_pointer) = (unsigned int)exit_handler;
-            // new_stack_pointer -= 4;
             task_list[i].ebp = new_stack_pointer;
             task_list[i].esp = new_stack_pointer;
             task_list[i].eip = func_address;
@@ -53,7 +49,6 @@ void init_task(unsigned int func_address) {
 }
 
 void switch_task(stack_with_err_code* regs) {
-    print("switch task\n");
     task_list[current_task_index].ebp = regs->ebp;
     task_list[current_task_index].esp = regs->esp;
     task_list[current_task_index].eip = regs->eip;
@@ -64,6 +59,8 @@ void switch_task(stack_with_err_code* regs) {
     task_list[current_task_index].edx = regs->edx;
     task_list[current_task_index].ecx = regs->ecx;
     task_list[current_task_index].eax = regs->eax;
+
+    task_list[current_task_index].eflags = regs->eflags;
 
     for (int i = current_task_index + 1; i < tasks_num; i++) {
         if (!task_list[i].is_fineshed) {
@@ -77,6 +74,7 @@ void switch_task(stack_with_err_code* regs) {
             regs->edx = task_list[i].edx;
             regs->ecx = task_list[i].ecx;
             regs->eax = task_list[i].eax;
+//            regs->eflags = task_list[current_task_index].eflags;
 
             current_task_index = i;
             return;
@@ -115,7 +113,7 @@ void task1() {
 void task2() {
     while(1) {
         if ((custom_counter % 1000000) == 0) { 
-           // print("Hello from task 2\n");
+           print("Hello from task 2\n");
         }
         custom_counter++;
     } 
@@ -125,7 +123,7 @@ void task3() {
     while(1) {
         //asm volatile("sti");
         if ((custom_counter % 1000000) == 0) {
-            //print("Hello from task 3\n");
+            print("Hello from task 3\n");
         }
         custom_counter++;
     }
@@ -146,7 +144,7 @@ void start_multitasking() {
         task_list[i].is_fineshed = 1;
     }
     init_task((unsigned int)task1);
-   // init_task((unsigned int)task2);
+    init_task((unsigned int)task2);
     init_task((unsigned int)task3);
     init_task((unsigned int)task4);
     current_task_index = 0;

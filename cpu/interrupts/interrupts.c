@@ -137,11 +137,11 @@ void init_idt() {
 }
 
 void common_handler(stack_with_err_code regs) {
-    // print("recieved interrupt with err code: ");
-    // char int_no[10];
-    // str(int_no, regs.int_no);
-    // print(int_no);
-    // print("\n");
+    print("recieved interrupt with err code: ");
+    char int_no[10];
+    str(int_no, regs.int_no);
+    print(int_no);
+    print("\n");
 }
 
 void irq_common_handler(stack_with_err_code regs) {

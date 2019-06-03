@@ -121,6 +121,7 @@ irq_handle:
     iret
 
 irq_timer_handler:
+    cli
     push 0
     push 32
 
@@ -146,9 +147,6 @@ irq_timer_handler:
     mov ebx, esp ; store old esp
 
     pop esp ; store esp
-
-    mov eax, [ebx + 28]
-    mov eax, [esp + 8]
 
     mov eax, [ebx + 28] ; eip
     mov [esp + 8], eax
@@ -181,5 +179,6 @@ irq_timer_handler:
     pop eax
 
     add esp, 8
+    sti
     iret
 

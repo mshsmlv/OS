@@ -7,15 +7,12 @@
 int tick = 0;
 
 void timer_callback(stack_with_err_code* regs) {
-    tick++;
     if (tick == 1000) {
-        print("tick\n");
         tick = 0;
+        print("-------------------------\n");
         switch_task(regs);
-        print("esp: ");
-        print_num(regs->esp);
-        print("\n");
     }
+    tick++;
 }
 
 void init_timer() {

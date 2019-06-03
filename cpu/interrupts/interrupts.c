@@ -125,10 +125,6 @@ void init_idt() {
     idt_set_gate(46, (unsigned int)irq46, 0x08, 0x8E);
     idt_set_gate(47, (unsigned int)irq47, 0x08, 0x8E);
 
-    print("irq timer handler: \n");
-    print_num((unsigned int)irq_timer_handler);
-    print("\n");
-
     for(int i = 0; i < 256; i++) {
         irq_handlers[i] = 0;
     }
@@ -137,11 +133,11 @@ void init_idt() {
 }
 
 void common_handler(stack_with_err_code regs) {
-    // print("recieved interrupt with err code: ");
-    // char int_no[10];
-    // str(int_no, regs.int_no);
-    // print(int_no);
-    // print("\n");
+    print("recieved interrupt with err code: ");
+    char int_no[10];
+    str(int_no, regs.int_no);
+    print(int_no);
+    print("\n");
 }
 
 void irq_common_handler(stack_with_err_code regs) {
@@ -161,16 +157,18 @@ void irq_common_handler(stack_with_err_code regs) {
     if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */
     send_byte_to_port(0x20, 0x20); /* master */
 }
-int tick1 = 0;
+
+int tick = 0;
+
 void irq_timer_handler_c(task_stack stack_context) {
-     if (tick1 == 1000) {
-        tick1 = 0;
+    if (tick == 1000) {
+        tick = 0;
         print("-------------------------\n");
         print("regs.eflags: ");
         print_num(stack_context.eflags);
         print("\n");
         switch_task(&stack_context);
     }
-    tick1++;
+    tick++;
     send_byte_to_port(0x20, 0x20); /* master */
 }

@@ -11,7 +11,7 @@ void test_interrupts() {
 
 void main() {
    init_idt();
-   test_interrupts();
+  // test_interrupts();
    init_pic8259();
    init_timer();
    init_keyboard();

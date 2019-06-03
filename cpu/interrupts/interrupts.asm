@@ -122,19 +122,11 @@ irq_handle:
 
 irq_timer_handler:
     cli
-
     pushad
-
     push esp
-
     call irq_timer_handler_c
-
     pop esp
- 
-    ;edi, esi, ebp, esp, ebx, edx, ecx, eax
-
     popad
-
     sti
     iret
 

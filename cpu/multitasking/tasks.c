@@ -19,12 +19,13 @@ void exit_handler() {
 }
 
 void init_task(unsigned int func_address) {
-
     disable_intr();
     for(int i = 0; i < tasks_num; i++) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
             unsigned int new_stack_pointer = stacks + stack_size*(i + 1) - 4;
+            *((unsigned int*)new_stack_pointer) = exit_handler;
+            new_stack_pointer -= 4;
             *((unsigned int*)new_stack_pointer) = 518; //eflags
             new_stack_pointer -= 4;
             *((unsigned int*)new_stack_pointer) = 8; // cs
@@ -33,19 +34,6 @@ void init_task(unsigned int func_address) {
             new_stack_pointer -= 4*7;
             *((unsigned int*)new_stack_pointer) = new_stack_pointer - 4;
             task_list[i].esp = new_stack_pointer - 4;
-
-            print("init task with index: ");
-            print_num(i);
-            print("\n");
-            print("init task with eip: ");
-            print_num(task_list[i].eip);
-            print("\n");
-            print("init task with ret address: ");
-            print_num((unsigned int)exit_handler);
-            print("\n");
-            print("init task with stack: ");
-            print_num(new_stack_pointer);
-            print("\n");
             enable_intr();
             return;
         }
@@ -91,12 +79,7 @@ void main_task() {
 }
 
 void task2() {
-    while(1) {
-        if ((custom_counter % 1000000) == 0) {
-            print("Hello from task 2\n");
-        }
-        custom_counter++;
-    }
+    print("Hello from task 2\n");
 }
 
 void task3() {

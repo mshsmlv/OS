@@ -4,22 +4,7 @@
 #include "../helpers/helpers.h"
 #include "../screen/print.h"
 
-int tick = 0;
-
-void timer_callback(task_stack* stack_context) {
-    if (tick == 1000) {
-        tick = 0;
-        print("-------------------------\n");
-        print("regs.eflags: ");
-        print_num(stack_context->eflags);
-        print("\n");
-        //switch_task(regs);
-    }
-    tick++;
-}
-
 void init_timer() {
-    set_irq_handler(32, timer_callback); 
     /* Get the PIT value: hardware clock at 1193180 Hz */
     unsigned int divisor = 1193180;
     unsigned char low  = (unsigned char)(divisor & 0xFF);

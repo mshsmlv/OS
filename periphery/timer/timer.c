@@ -12,6 +12,9 @@ void timer_callback(stack_with_err_code* regs) {
         print("tick\n");
         tick = 0;
         switch_task(regs);
+        print("esp: ");
+        print_num(regs->esp);
+        print("\n");
     }
 }
 

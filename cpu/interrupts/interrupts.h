@@ -24,21 +24,12 @@ typedef struct _stack_with_err_code {
    unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
 }  stack_with_err_code;
 
-struct _stack_without_err_code {
-   unsigned int ds;                                     // Data segment selector
-   unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
-   unsigned int int_no;
-   unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
-}  __attribute__((packed));
-typedef struct _stack_without_err_code stack_without_err_code;
-
 
 typedef void (*irq_handler)(stack_with_err_code*);
 irq_handler irq_handlers[256];
 
 void init_idt();
 void isr_handler_with_err(stack_with_err_code regs);
-void isr_handler_without_err(stack_without_err_code regs);
 void irq_common_handler(stack_with_err_code regs);
 void set_irq_handler(int index, irq_handler func);
 

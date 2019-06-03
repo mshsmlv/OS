@@ -6,11 +6,14 @@
 
 int tick = 0;
 
-void timer_callback(stack_with_err_code* regs) {
+void timer_callback(task_stack* stack_context) {
     if (tick == 1000) {
         tick = 0;
         print("-------------------------\n");
-        switch_task(regs);
+        print("regs.eflags: ");
+        print_num(stack_context->eflags);
+        print("\n");
+        //switch_task(regs);
     }
     tick++;
 }

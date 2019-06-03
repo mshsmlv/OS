@@ -24,6 +24,12 @@ typedef struct _stack_with_err_code {
    unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
 }  stack_with_err_code;
 
+typedef struct _task_stack {
+    unsigned int esp;
+    unsigned int edi, esi, ebp, _esp, ebx, edx, ecx, eax; // Pushed by pusha.
+    unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
+} task_stack;
+
 
 typedef void (*irq_handler)(stack_with_err_code*);
 irq_handler irq_handlers[256];

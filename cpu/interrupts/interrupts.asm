@@ -4,7 +4,7 @@
 [extern isr_handler_without_err]
 [extern common_handler]
 [extern irq_common_handler]
-[extern timer_callback]
+[extern irq_timer_handler_c]
 
 idt_flush:
     mov eax, [esp+4]   
@@ -122,63 +122,19 @@ irq_handle:
 
 irq_timer_handler:
     cli
-    push 0
-    push 32
 
     pushad
 
-    mov ax, ds
-    push eax
+    push esp
 
-    mov ax, 0x10
-    mov ds, ax
+    call irq_timer_handler_c
 
-    call irq_common_handler
-     
-    pop eax
-    mov ds, ax
+    pop esp
  
     ;edi, esi, ebp, esp, ebx, edx, ecx, eax
 
-    pop edi
-    pop esi
-    pop ebp
+    popad
 
-    mov ebx, esp ; store old esp
-
-    pop esp ; store esp
-
-    mov eax, [ebx + 28] ; eip
-    mov [esp + 8], eax
-
-    mov eax, [ebx + 32] ; cs
-    mov [esp + 12], eax
-
-    mov eax, [ebx + 36] ; eflags
-    
-    mov [esp + 16], eax
-
-    mov eax, [ebx + 36]
-    mov eax, [esp + 16]
-
-    mov eax, [ebx + 16] ; eax
-    push eax
-
-    mov eax, [ebx + 12] ; ecx
-    push eax
-
-    mov eax, [ebx + 8] ; edx
-    push eax
-
-    mov eax, [ebx + 4] ; ebx
-    push eax
-
-    pop ebx
-    pop edx
-    pop ecx
-    pop eax
-
-    add esp, 8
     sti
     iret
 

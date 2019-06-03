@@ -9,7 +9,7 @@ typedef struct task_t{
 
 void init_task(unsigned int func_address);
 void scheduler();
-void switch_task(stack_with_err_code* regs);
+void switch_task(task_stack* regs);
 void start_multitasking();
 
 static inline void disable_intr(void) {

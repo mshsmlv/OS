@@ -19,23 +19,21 @@ void exit_handler() {
 }
 
 void init_task(unsigned int func_address) {
+
     disable_intr();
     for(int i = 0; i < tasks_num; i++) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
             unsigned int new_stack_pointer = stacks + stack_size*(i + 1) - 4;
-            *((unsigned int*)new_stack_pointer) = exit_handler;
-            new_stack_pointer -= 4*5;
-            task_list[i].ebp = new_stack_pointer;
-            task_list[i].esp = new_stack_pointer;
-            task_list[i].eip = func_address;
+            *((unsigned int*)new_stack_pointer) = 518; //eflags
+            new_stack_pointer -= 4;
+            *((unsigned int*)new_stack_pointer) = 8; // cs
+            new_stack_pointer -= 4;
+            *((unsigned int*)new_stack_pointer) = func_address; //eip
+            new_stack_pointer -= 4*7;
+            *((unsigned int*)new_stack_pointer) = new_stack_pointer - 4;
+            task_list[i].esp = new_stack_pointer - 4;
 
-            task_list[i].edi = 0;
-            task_list[i].esi = 0;
-            task_list[i].ebx = 0;
-            task_list[i].edx = 0;
-            task_list[i].ecx = 0;
-            task_list[i].eax = 0;
             print("init task with index: ");
             print_num(i);
             print("\n");
@@ -56,31 +54,17 @@ void init_task(unsigned int func_address) {
     enable_intr();
 }
 
-void switch_task(stack_with_err_code* regs) {
-    task_list[current_task_index].ebp = regs->ebp;
-    task_list[current_task_index].esp = regs->esp;
-    task_list[current_task_index].eip = regs->eip;
+void switch_task(task_stack* regs) {
+    print("switch task\n");
 
-    task_list[current_task_index].edi = regs->edi;
-    task_list[current_task_index].esi = regs->esi;
-    task_list[current_task_index].ebx = regs->ebx;
-    task_list[current_task_index].edx = regs->edx;
-    task_list[current_task_index].ecx = regs->ecx;
-    task_list[current_task_index].eax = regs->eax;
-    task_list[current_task_index].eflags = regs->eflags;
+    task_list[current_task_index].esp = regs->esp;
     
     for (int i = current_task_index + 1; i < tasks_num; i++) {
         if (!task_list[i].is_fineshed) {
-            regs->eip = task_list[i].eip;
             regs->esp = task_list[i].esp;
-            regs->ebp = task_list[i].ebp;
-
-            regs->edi = task_list[i].edi;
-            regs->esi = task_list[i].esi;
-            regs->ebx = task_list[i].ebx;
-            regs->edx = task_list[i].edx;
-            regs->ecx = task_list[i].ecx;
-            regs->eax = task_list[i].eax;
+            print("new esp: ");
+            print_num(task_list[i].esp);
+            print("\n");
 
             current_task_index = i;
             return;
@@ -88,17 +72,7 @@ void switch_task(stack_with_err_code* regs) {
     }
     for (int i = 0; i <= current_task_index; i++) {
         if (!task_list[i].is_fineshed) {
-            regs->eip = task_list[i].eip;
             regs->esp = task_list[i].esp;
-            regs->ebp = task_list[i].ebp;
-
-            regs->edi = task_list[i].edi;
-            regs->esi = task_list[i].esi;
-            regs->ebx = task_list[i].ebx;
-            regs->edx = task_list[i].edx;
-            regs->ecx = task_list[i].ecx;
-            regs->eax = task_list[i].eax;
-
             current_task_index = i;
             return;
         }
@@ -117,7 +91,12 @@ void main_task() {
 }
 
 void task2() {
-    print("Hello from task 2\n");
+    while(1) {
+        if ((custom_counter % 1000000) == 0) {
+            print("Hello from task 2\n");
+        }
+        custom_counter++;
+    }
 }
 
 void task3() {

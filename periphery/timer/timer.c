@@ -1,8 +1,7 @@
 #include "timer.h"
-
-#include "../../cpu/interrupts/interrupts.h"
-#include "../helpers/helpers.h"
-#include "../screen/print.h"
+#include "interrupts.h"
+#include "helpers.h"
+#include "print.h"
 
 void init_timer() {
     /* Get the PIT value: hardware clock at 1193180 Hz */

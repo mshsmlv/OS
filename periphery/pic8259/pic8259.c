@@ -1,6 +1,5 @@
 #include "pic8259.h"
-
-#include "../helpers/helpers.h"
+#include "helpers.h"
 
 void init_pic8259() {
     send_byte_to_port(0x20, 0x11); // needs icw4; cascade mode enable; edge triggered mode

@@ -9,16 +9,16 @@ interrupts.o: ./cpu/interrupts/interrupts.asm
 	nasm -f elf ./cpu/interrupts/interrupts.asm -o ./build/interrupts.o
 
 interrupts_c.o: ./cpu/interrupts/interrupts.c
-	gcc $(CFLAGS) ./cpu/interrupts/interrupts.c -o ./build/interrupts_c.o
+	gcc $(CFLAGS) ./cpu/interrupts/interrupts.c -o ./build/interrupts_c.o -Iperiphery/helpers -Iperiphery/screen
 
 pic8259.o: ./periphery/pic8259/pic8259.c
-	gcc $(CFLAGS) ./periphery/pic8259/pic8259.c -o ./build/pic8259.o
+	gcc $(CFLAGS) ./periphery/pic8259/pic8259.c -o ./build/pic8259.o -Iperiphery/helpers
 
 timer.o: ./periphery/timer/timer.c
-	gcc $(CFLAGS) ./periphery/timer/timer.c -o ./build/timer.o
+	gcc $(CFLAGS) ./periphery/timer/timer.c -o ./build/timer.o -Iperiphery/helpers -Icpu/interrupts -Iperiphery/screen
 
 keyboard.o: ./periphery/keyboard/keyboard.c
-	gcc $(CFLAGS) ./periphery/keyboard/keyboard.c -o ./build/keyboard.o
+	gcc $(CFLAGS) ./periphery/keyboard/keyboard.c -o ./build/keyboard.o -Iperiphery/helpers -Iperiphery/screen -Icpu/interrupts
 
 print.o: ./periphery/screen/print.c
 	gcc $(CFLAGS) ./periphery/screen/print.c -o ./build/print.o
@@ -27,10 +27,12 @@ tasks.o: ./cpu/multitasking/task.asm
 	nasm -f elf ./cpu/multitasking/task.asm -o ./build/tasks.o
 
 tasks_c.o: ./cpu/multitasking/tasks.c
-	gcc $(CFLAGS) ./cpu/multitasking/tasks.c -o ./build/tasks_c.o
+	gcc $(CFLAGS) ./cpu/multitasking/tasks.c -o ./build/tasks_c.o -Iperiphery/helpers -Icpu/interrupts
 
 kernel.o: kernel.c
-	gcc $(CFLAGS) kernel.c -o ./build/kernel.o
+	gcc $(CFLAGS) kernel.c -o ./build/kernel.o -Iperiphery/pic8259 \
+	 -Iperiphery/timer -Iperiphery/keyboard \
+	 -Icpu/interrupts -Icpu/multitasking \
 
 boot: ./cpu/boot/boot.asm
 	nasm -fbin ./cpu/boot/boot.asm -o ./build/boot

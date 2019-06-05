@@ -1,8 +1,7 @@
 #include "keyboard.h"
-
-#include "../screen/print.h"
-#include "../../cpu/interrupts/interrupts.h"
-#include "../helpers/helpers.h"
+#include "print.h"
+#include "interrupts.h"
+#include "helpers.h"
 
 char scancode_to_ascii[100] = "\xff`1234567890-=\xff\xffqwertyuiop[]\xff\xff\x61sdfghjkl;'\x0a\xff\xffzxcvbnm,./\xff\xff\xff\xff ";
 

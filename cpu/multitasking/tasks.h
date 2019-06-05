@@ -1,5 +1,5 @@
 #pragma once
-#include "../interrupts/interrupts.h"
+#include "interrupts.h"
 
 typedef struct task_t{
     unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;

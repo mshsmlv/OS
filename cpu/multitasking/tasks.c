@@ -1,6 +1,5 @@
 #include "tasks.h"
-
-#include "../../periphery/helpers/helpers.h"
+#include "helpers.h"
 
 extern stacks;
 extern void irq_timer_handler();
@@ -22,6 +21,8 @@ void exit_handler() {
 
 void init_task(unsigned int func_address) {
     disable_intr();
+    asm volatile("pushf");
+
     for(int i = 0; i < tasks_num; i++) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
@@ -36,11 +37,13 @@ void init_task(unsigned int func_address) {
             new_stack_pointer -= 4*7;
             *((unsigned int*)new_stack_pointer) = new_stack_pointer - 4;
             task_list[i].esp = new_stack_pointer - 4;
+            asm volatile("popf");
             enable_intr();
             return;
         }
     }
     print("Tasks limit exceeded\n");
+    asm volatile("popf");
     enable_intr();
 }
 

@@ -1,7 +1,6 @@
 #include "interrupts.h"
-
-#include "../../periphery/screen/print.h"
-#include "../../periphery/helpers/helpers.h"
+#include "helpers.h"
+#include "print.h"
 
 extern void isr_without_err0();
 extern void isr_without_err1();

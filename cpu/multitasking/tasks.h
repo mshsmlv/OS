@@ -1,11 +1,13 @@
-#pragma once
-#include "interrupts.h"
-
 typedef struct task_t{
-    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;
-    unsigned int eip, eflags;
+    unsigned int esp;
     unsigned int is_fineshed;
 } __attribute__((packed)) task; 
+
+typedef struct _task_stack {
+    unsigned int esp;
+    unsigned int edi, esi, ebp, _esp, ebx, edx, ecx, eax; // Pushed by pusha.
+    unsigned int eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
+} task_stack;
 
 void init_task(unsigned int func_address);
 void scheduler();

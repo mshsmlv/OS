@@ -1,12 +1,12 @@
 #include "tasks.h"
 #include "helpers.h"
 
-extern stacks;
 extern void irq_timer_handler();
 
 task task_list[10];
 unsigned int tasks_num = 10;
 unsigned int stack_size = 1024;
+unsigned char stacks[10][1024];
 unsigned int current_task_index = -1;
 
 

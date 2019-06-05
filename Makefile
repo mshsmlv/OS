@@ -23,9 +23,6 @@ keyboard.o: ./periphery/keyboard/keyboard.c
 print.o: ./periphery/screen/print.c
 	gcc $(CFLAGS) ./periphery/screen/print.c -o ./build/print.o
 
-tasks.o: ./cpu/multitasking/task.asm
-	nasm -f elf ./cpu/multitasking/task.asm -o ./build/tasks.o
-
 tasks_c.o: ./cpu/multitasking/tasks.c
 	gcc $(CFLAGS) ./cpu/multitasking/tasks.c -o ./build/tasks_c.o -Iperiphery/helpers -Icpu/interrupts
 
@@ -37,7 +34,7 @@ kernel.o: kernel.c
 boot: ./cpu/boot/boot.asm
 	nasm -fbin ./cpu/boot/boot.asm -o ./build/boot
 
-kernel: protect.o kernel.o print.o interrupts_c.o interrupts.o pic8259.o timer.o keyboard.o tasks.o tasks_c.o
+kernel: protect.o kernel.o print.o interrupts_c.o interrupts.o pic8259.o timer.o keyboard.o tasks_c.o
 	ld -T linker.ld ./build/*.o -o ./build/kernel
 
 disk.img: boot kernel

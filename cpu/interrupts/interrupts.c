@@ -157,18 +157,3 @@ void irq_common_handler(stack_with_err_code regs) {
     if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */
     send_byte_to_port(0x20, 0x20); /* master */
 }
-
-int tick = 0;
-
-void irq_timer_handler_c(task_stack stack_context) {
-    if (tick == 1000) {
-        tick = 0;
-        print("-------------------------\n");
-        print("regs.eflags: ");
-        print_num(stack_context.eflags);
-        print("\n");
-        switch_task(&stack_context);
-    }
-    tick++;
-    send_byte_to_port(0x20, 0x20); /* master */
-}

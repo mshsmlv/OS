@@ -142,15 +142,6 @@ void common_handler(stack_with_err_code regs) {
 void irq_common_handler(stack_with_err_code regs) {
     irq_handler handler = irq_handlers[regs.int_no];
     if (handler != 0) {
-        // print("handler address: ");
-        // print_num((unsigned int)handler);
-        // print("\n");
-        // print("cs :");
-        // print_num(regs.cs);
-        // print("\n");
-        // print("eip: ");
-        // print_num(regs.eip);
-        // print("\n");
         (*handler)(&regs);      
     }
     if (regs.int_no >= 40) send_byte_to_port(0xa0, 0x20); /* slave */

@@ -7,7 +7,7 @@ task task_list[10];
 unsigned int tasks_num = 10;
 unsigned int stack_size = 1024;
 unsigned char stacks[10][1024];
-unsigned int current_task_index = -1;
+unsigned int current_task_index;
 
 
 void exit_handler() {
@@ -15,20 +15,19 @@ void exit_handler() {
     print_num(current_task_index + 1);
     print("\n");
     task_list[current_task_index].is_fineshed = 1;
-    asm volatile("cli");
+    disable_intr();
     irq_timer_handler();
 }
 
 void init_task(unsigned int func_address) {
-    disable_intr();
-
+    save_state();
     for(int i = 0; i < tasks_num; i++) {
         if(task_list[i].is_fineshed) {
             task_list[i].is_fineshed = 0;
             unsigned int new_stack_pointer = stacks + stack_size*(i + 1) - 4;
             *((unsigned int*)new_stack_pointer) = exit_handler;
             new_stack_pointer -= 4;
-            *((unsigned int*)new_stack_pointer) = 518; //eflags
+            *((unsigned int*)new_stack_pointer) = 514; //eflags
             new_stack_pointer -= 4;
             *((unsigned int*)new_stack_pointer) = 8; // cs
             new_stack_pointer -= 4;
@@ -36,14 +35,13 @@ void init_task(unsigned int func_address) {
             new_stack_pointer -= 4*7;
             *((unsigned int*)new_stack_pointer) = new_stack_pointer - 4;
             task_list[i].esp = new_stack_pointer - 4;
-            enable_intr();
+            restore_state();
             return;
         }
     }
     print("Tasks limit exceeded\n");
-    enable_intr();
+    restore_state();
 }
-
 
 int tick = 0;
 
@@ -77,7 +75,6 @@ void switch_task(task_stack* task_context) {
         }
     }
 }
-
 
 int custom_counter = 0;
 void main_task() {

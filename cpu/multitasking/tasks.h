@@ -10,14 +10,13 @@ typedef struct _task_stack {
 } task_stack;
 
 void init_task(unsigned int func_address);
-void scheduler();
 void switch_task(task_stack* regs);
 void start_multitasking();
 
-static inline void disable_intr(void) {
+static inline  __attribute__((always_inline)) void disable_intr(void) {
     asm volatile("cli");
 }
 
-static inline void enable_intr(void) {
+static inline  __attribute__((always_inline)) void enable_intr(void) {
     asm volatile("sti");
 }

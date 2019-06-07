@@ -1,4 +1,5 @@
 #include "print.h"
+#include "helpers.h"
 
 char* VIDEO_MEMORY = (char*)0xb8000;
 int BEGIN_OF_VIDEO_MEMORY = 0xb8000;
@@ -76,6 +77,7 @@ void tabulation() {
 }
 
 int print(char* format_string) {
+    save_state();
     int i = 0;
     while (format_string[i]) {
         if ((int)(VIDEO_MEMORY+2) >= BEGIN_OF_VIDEO_MEMORY + STRINGS_NUMBER*COLUMNS_NUMBER*2) {
@@ -97,6 +99,7 @@ int print(char* format_string) {
         VIDEO_MEMORY += 2;
         i++;
     }
+    restore_state();
 }
 
 void print_num(int num) {

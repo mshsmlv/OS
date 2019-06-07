@@ -21,7 +21,7 @@ keyboard.o: ./periphery/keyboard/keyboard.c
 	gcc $(CFLAGS) ./periphery/keyboard/keyboard.c -o ./build/keyboard.o -Iperiphery/helpers -Iperiphery/screen -Icpu/interrupts
 
 print.o: ./periphery/screen/print.c
-	gcc $(CFLAGS) ./periphery/screen/print.c -o ./build/print.o
+	gcc $(CFLAGS) ./periphery/screen/print.c -o ./build/print.o -Iperiphery/helpers
 
 tasks_c.o: ./cpu/multitasking/tasks.c
 	gcc $(CFLAGS) ./cpu/multitasking/tasks.c -o ./build/tasks_c.o -Iperiphery/helpers -Icpu/interrupts

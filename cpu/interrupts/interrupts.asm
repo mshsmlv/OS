@@ -121,12 +121,10 @@ irq_handle:
     iret
 
 irq_timer_handler:
-    cli
     pushad
     push esp
     call irq_timer_handler_c
     pop esp
     popad
-    sti
     iret
 

@@ -13,3 +13,12 @@ static inline char read_byte_from_port(unsigned short port) {
     asm volatile ("inb %1, %0": "=a"(ret): "dN"(port) );
     return ret;
 }
+
+static inline __attribute__((always_inline)) save_state() {
+    asm volatile("pushf");
+    asm volatile("cli");
+}
+
+static inline __attribute__((always_inline)) restore_state() {
+    asm volatile("popf");
+}

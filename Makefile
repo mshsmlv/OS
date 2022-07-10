@@ -48,3 +48,9 @@ run: disk.img
 clean:
 	rm -f boot disk.img ./build/*
 
+install-bochs:
+	sudo apt-get install -y vgabios
+	sudo apt install bochs
+	sudo apt install bochs-x
+	
+
